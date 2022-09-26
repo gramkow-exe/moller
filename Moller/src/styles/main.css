@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    background-color: black;
+    height: 100%;
+    font-family: 'Quicksand';
+}
+
+.logo{
+    font-family: 'Ms Madi', cursive;
+}
+
+div::-webkit-scrollbar {
+  width: 8px;               /* width of the entire scrollbar */
+}
+
+div::-webkit-scrollbar-track {
+  background: RGB(191,64,191);        /* color of the tracking area */
+}
