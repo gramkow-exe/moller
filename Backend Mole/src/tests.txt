@@ -1,0 +1,7 @@
+-- Criação de usuário
+{
+    email : "roberto@gmail.com",
+    password : "teste", 
+    name : "robertinho", 
+    avatar : "https://scontent.ffln5-1.fna.fbcdn.net/v/t39.30808-6/299209540_439354564903464_7954275609120297894_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=E7RCQGBriiMAX8olPB5&_nc_ht=scontent.ffln5-1.fna&oh=00_AT_bf9bWqZND2clt6qogEVf1_dKUPj_8EP_g7OJLWd28mA&oe=6335EEB7"
+}

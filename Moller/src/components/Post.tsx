@@ -19,7 +19,6 @@ interface Props{
 }
 
 export default function Post({post}: Props) {
-  
   return (
     <div className="rounded-lg border-gray-50/50 border-2 w-full h-auto min-h-80 p-4 mt-4 hover:border-fuchsia-400/50 transition-all">
         <div className="flex items-center">

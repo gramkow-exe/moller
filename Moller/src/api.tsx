@@ -51,3 +51,12 @@ export async function validateToken(token : string): Promise<User | null>{
         return(data)
     })
 }
+
+export async function gravarPost(post : string, emailUsuario : string): Promise<User | null>{
+    return await axios.post("http://localhost:3000/gravar-post", {
+        post, emailUsuario
+    }).then((response: AxiosResponse) => { 
+        let data: User | null = response.data;
+        return(data)
+    })
+}
