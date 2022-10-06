@@ -3,7 +3,7 @@ O projeto Moller consiste em um protótipo de rede social para fins de estudos.
 Entre as principais classes estão:
 
 
-![alt text](https://i.imgur.com/1EEuDQ3.png)
+![alt text](https://i.imgur.com/QZel4K6.png)
 
 
 
