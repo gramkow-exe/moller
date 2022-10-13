@@ -34,6 +34,15 @@ export async function logar(email : string, password : string): Promise<string>{
     })
 }
 
+export async function register(email : string, password : string, name:string, avatar:string) : Promise<string>{
+    return await axios.post("http://localhost:3000/create-account", {
+        email, password, name, avatar
+    }).then((response: AxiosResponse) => { 
+        let data: string = response.data;
+        return(data)
+    })
+}
+
 export async function criptografar(password : string): Promise<string>{
     return await axios.get("http://localhost:3000/passwordCriptographer", {params: {
         password

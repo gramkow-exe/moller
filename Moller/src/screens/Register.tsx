@@ -9,38 +9,41 @@ import {
   TextField,
 } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
-import { loadPosts, criptografar, logar } from "../api";
+import { loadPosts, criptografar, logar, register } from "../api";
 import InputMoller from "../components/InputMoller";
 import Menus from "../components/Menus";
 import Post from "../components/Post";
 import AppCtx from "../Context";
 
-export default function Login() {
+export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [imgUrl, setImgUrl] = useState("");
 
   const {showLogin,
     setShowLogin} = useContext(AppCtx);
 
-  async function login() {
+  function showLoginUsuario(){
+    if (setShowLogin){
+      setShowLogin(!showLogin)
+    }
+  }
+
+  async function registrar() {
     var senhaCriptografada = await criptografar(password);
-    var token = await logar(email, senhaCriptografada);
+    var token = await register(email, senhaCriptografada, name, imgUrl);
+    console.log(token)
     if (token !== ""){
         localStorage.setItem("token", token)
     }
     window.location.reload()
   }
 
-  function showRegistroUsuario(){
-    if (setShowLogin){
-      setShowLogin(!showLogin)
-    }
-  }
-
   return (
-    <div className=" w-full h-screen flex items-center justify-center ">
+    <div className=" w-full h-screen flex items-center justify-center">
       <div className="w-30 p-6 h-3/12 bg-violet-200 flex flex-col rounded-lg">
-        <label className="mt-0 mb-2 text-center">Login</label>
+        <label className="mt-0 mb-2 text-center">Registro</label>
 
         <TextField
           id="outlined-name"
@@ -64,24 +67,47 @@ export default function Login() {
             setPassword(e.target.value);
           }}
         />
-        <div className="flex mt-4 justify-between">
+
+        <TextField
+          id="outlined-name"
+          label="Name"
+          type="string"
+          color="secondary"
+          value={name}
+          style={{marginTop:10}}
+          onChange={(e) => {
+            setName(e.target.value);
+          }}
+        />
+
+        <TextField
+          id="outlined-name"
+          label="Image Url"
+          type="string"
+          color="secondary"
+          value={imgUrl}
+          style={{marginTop:10}}
+          onChange={(e) => {
+            setImgUrl(e.target.value);
+          }}
+        />
+        <div className="flex justify-between mt-4">
           <Button
             className="w-3/8"
             variant="outlined"
             color="secondary"
             disabled={email == "" || password == ""}
-            onClick={login}
+            onClick={registrar}
           >
-            Logar
+            Registro
           </Button>
-
           <Button
             className="w-3/8"
             variant="outlined"
             color="secondary"
-            onClick={showRegistroUsuario}
+            onClick={showLoginUsuario}
           >
-            Registrar
+            Logar-se
           </Button>
         </div>
       </div>

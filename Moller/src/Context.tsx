@@ -7,12 +7,16 @@ interface AppContextInterface {
     setEmail?: Dispatch<SetStateAction<string>>;
     avatar: string;
     setAvatar?: Dispatch<SetStateAction<string>>;
+    showLogin: Boolean,
+    setShowLogin?: Dispatch<SetStateAction<boolean>>;
   }
 
   const defaultState = {
     nome: "",
     email: "",
-    avatar: ""
+    avatar: "",
+    showLogin: true,
+    showRegister: false
   };
 
   const AppCtx = createContext<AppContextInterface>(defaultState);

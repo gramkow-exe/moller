@@ -27,6 +27,12 @@ export default function Menus() {
             Sobre
           </Button>
         </Link>
+        <Link to="/">
+          <Button style={{ color: "white", width: 150 }} color="secondary" onClick={()=> {localStorage.removeItem("token") 
+                                                                                          window.location.reload()}} variant="outlined">
+            Sair
+          </Button>
+        </Link>
       </div>
     </div>
   );
