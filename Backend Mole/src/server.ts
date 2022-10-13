@@ -88,6 +88,212 @@ app.get("/posts", async function(req, res){
     res.send(data)
 })
 
+app.post("/teste-classes/usuario", jsonParser, async function(req, res){
+    let usuario = new User(
+        req.body.email,
+        req.body.password, 
+        req.body.name, 
+        req.body.avatar, 
+    ) 
+    
+    const user = await prisma.user.create({
+        data:{
+            email: usuario.email,
+            password:criptografar(usuario.password),
+            name: usuario.name,
+            avatar: usuario.avatar,
+        }
+    })
+
+
+    let criado = await prisma.user.findFirst({
+        where: {
+            email: usuario.email
+    }})
+    res.send(criado)
+})
+app.delete("/teste-classes/del-usuario", async function(req, res){
+
+    const email = req.query.email
+
+    if (email){
+        const user = await prisma.user.delete({
+            where:{
+                email : email.toString()
+            }
+        })
+    }
+    
+    res.send("")
+})
+app.put("/teste-classes/update-usuario", jsonParser, async function(req, res){
+
+    let usuario = new User(
+        req.body.email,
+        req.body.password, 
+        req.body.name, 
+        req.body.avatar, 
+    ) 
+
+    const updateUser = await prisma.user.update({
+        where: {
+          email: usuario.email,
+        },
+        data: {
+          name: usuario.name,
+          password: criptografar(usuario.password),
+          avatar: usuario.avatar
+        },
+    })
+    
+    res.send(updateUser)
+})
+app.post("/teste-classes/post", jsonParser, async function(req, res){
+    let post = new Post(
+        req.body.content,
+        req.body.authorId
+    ) 
+    
+    const criarPost = await prisma.post.create({
+        data:{
+            content:post.content,
+            authorId:post.authorId
+        }
+    })
+
+
+    let criado = await prisma.post.findFirst({
+        where: {
+            content: post.content
+    }})
+    res.send(criado)
+})
+app.post("/teste-classes/all", jsonParser, async function(req, res){
+    let usuario = new User(
+        req.body.email,
+        req.body.password, 
+        req.body.name, 
+        req.body.avatar, 
+    ) 
+    
+    const user = await prisma.user.create({
+        data:{
+            email: usuario.email,
+            password:criptografar(usuario.password),
+            name: usuario.name,
+            avatar: usuario.avatar,
+        }
+    })
+    
+    let post = new Post(
+        req.body.content,
+        req.body.authorId
+    ) 
+    
+    const criarPost = await prisma.post.create({
+        data:{
+            content:post.content,
+            authorId:user.id
+        }
+    })
+
+    let like = new Like(
+        user.id,
+        criarPost.id
+    )
+
+    const criarLike = await prisma.like.create({
+        data:{
+            authorId: like.authorId,
+            postId: like.postId
+        }
+    })
+
+    let comment = new Comment(
+        user.id,
+        criarPost.id,
+        req.body.comment
+    )
+
+    const criarComment = await prisma.comment.create({
+        data:{
+            postId: comment.postId,
+            authorId: comment.authorId,
+            content: comment.comment
+        }
+    })
+
+    
+    let qtdePosts = await prisma.post.aggregate({
+        _count: {
+            id: true,
+            },
+        where: {
+            data: {
+                gte: new Date("2022-10-3"),
+                lt:  new Date("2022-10-4")
+            },
+        },
+    })
+
+    let qtdeLikes = await prisma.like.aggregate({
+        _count:{
+            id:true
+        }, 
+        where: {
+            data: {
+                gte: new Date("2022-10-3"),
+                lt:  new Date("2022-10-4")
+            },
+        },
+    })  
+
+    let qtdeComments = await prisma.comment.aggregate({
+        _count: {
+            id: true,
+            },
+        where: {
+            data: {
+                gte: new Date("2022-10-3"),
+                lt:  new Date("2022-10-4")
+            },
+        },
+    })
+    
+    let dia = new analiseDia(
+        qtdePosts._count.id,
+        qtdeLikes._count.id,
+        qtdeComments._count.id
+    )
+
+    await prisma.like.delete({
+        where:{
+            id: criarLike.id
+        }
+    })
+
+    await prisma.comment.delete({
+        where:{
+            id: criarComment.id
+        }
+    })
+
+    await prisma.post.delete({
+        where:{
+            id: criarPost.id
+        }
+    })
+   
+    await prisma.user.delete({
+        where: {
+            email: user.email
+        }
+    })
+
+    
+    res.send(["Usuário:",user,"Post:", criarPost,"Like:", like, "Comentário:", criarComment, "Analise Dia:", dia])
+})
+
 app.post("/login", jsonParser, async function(req : any,res){
     let data = await prisma.user.findFirst({
         where: {
