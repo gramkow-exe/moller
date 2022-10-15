@@ -16,7 +16,7 @@ interface AppContextInterface {
     email: "",
     avatar: "",
     showLogin: true,
-    showRegister: false
+    showRegister: false,
   };
 
   const AppCtx = createContext<AppContextInterface>(defaultState);

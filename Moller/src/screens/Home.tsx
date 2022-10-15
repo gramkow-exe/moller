@@ -49,10 +49,10 @@ export default function Home() {
   }
   return (
     <div className="flex">
-      <div className="w-1/5">
+      <div className="w-3/12 sm:w-1/5">
         <Menus/>
       </div>
-      <div id="posts" className="w-[55%] p-4 overflow-y-auto bg-scroll min-h-[100%] max-h-[100%]" style={{color:"white"}}>
+      <div id="posts" className="w-9/12 sm:w-[55%] p-4 overflow-y-auto bg-scroll min-h-[100%] max-h-[100%]" style={{color:"white"}}>
       {nome}
 
         <InputMoller/>

@@ -22,10 +22,10 @@ export default function Post({post}: Props) {
   return (
     <div className="rounded-lg border-gray-50/50 border-2 w-full h-auto min-h-80 p-4 mt-4 hover:border-fuchsia-400/50 transition-all">
         <div className="flex items-center">
-            <img className="rounded-full w-14" src={post.author.avatar}></img>
+          <div className="rounded-full w-10 sm:w-14 bg-no-repeat bg-center bg-cover h-10 sm:h-14" style={{backgroundImage:`url("${post.author.avatar}")`}}></div>
             <div className="text-white ml-2">
-              <p className="text-xl">{post.author.name}</p>
-              <p className="text-white/50">{post.data.substring(0,10).split('-').reverse().join('/')}</p>
+              <p className="text-sm sm:text-lg">{post.author.name}</p>
+              <p className="text-white/50 text-xs sm:text-md">{post.data.substring(0,10).split('-').reverse().join('/')}</p>
             </div>
         </div>
         <div className="mt-2">
