@@ -10,7 +10,7 @@ import Logar from "./screens/Logar";
 import { setIp } from "./api";
 
 function App() {
-
+  const [id, setId] = useState(0)
   const [email, setEmail] = useState("")
   const [nome, setNome] = useState("")
   const [avatar, setAvatar] = useState("")
@@ -18,12 +18,13 @@ function App() {
   const [showRegister, setShowRegister] = useState(false)
 
   useEffect(()=> {
-    setIp(window.location.href.replace(":5173", ":3000"))
+    setIp(window.location.href.replace("5173", "3000"))
   }, [])
 
 
   return (
     <AppCtx.Provider value={{
+      id, setId,
       nome, setNome,
       email, setEmail,
       avatar, setAvatar,

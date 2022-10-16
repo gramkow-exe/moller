@@ -5,9 +5,16 @@ import AppCtx from "./Context";
 var ipBackend = ""
 
 interface Post{
+    id: number,
     content: String,
     data: String,
-    author: Author
+    author: Author,
+    likes: Array<Like>,
+    _count: _count
+}
+
+interface _count{
+    likes: number
 }
 
 interface Author{
@@ -16,14 +23,19 @@ interface Author{
 }
 
 interface User{
+    id: number,
     email: string,
     password: string,
     name: string,
     avatar: string
 }
 
-export async function loadPosts(): Promise<Post[]>{
-    return await axios.get(`${ipBackend}posts`).then((response: AxiosResponse) => { 
+interface Like{
+    id: number
+}
+
+export async function loadPosts(id:number): Promise<Post[]>{
+    return await axios.get(`${ipBackend}posts?id=${id}`).then((response: AxiosResponse) => { 
         let data: Post[] = response.data;
         return(data)
     })
@@ -76,4 +88,17 @@ export async function gravarPost(post : string, emailUsuario : string): Promise<
         let data: User | null = response.data;
         return(data)
     })
+}
+
+export async function criarLike(postId : number, authorId : number): Promise<Like | null>{
+    return await axios.post(`${ipBackend}criar-like`, {
+        postId, authorId
+    }).then((response: AxiosResponse) => { 
+        let data: Like | null = response.data;
+        return(data)
+    })
+}
+
+export async function removerLike(likeId: Number){
+    await axios.delete(`${ipBackend}remover-like?likeId=${likeId}`)
 }

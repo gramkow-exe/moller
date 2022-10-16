@@ -6,9 +6,16 @@ import Post from "../components/Post"
 import AppCtx from "../Context";
 
 interface Post{
+  id: number,
   content: String,
   data: String
-  author: Author
+  author: Author,
+  likes: Array<Like>,
+    _count: _count
+}
+
+interface _count{
+    likes: number
 }
 
 interface Author{
@@ -17,14 +24,19 @@ interface Author{
 }
 
 interface User{
+  id: number,
   email: string,
   password: string,
   name: string,
   avatar: string
 }
 
+interface Like{
+  id: number
+}
+
 export default function Home() {
-  const {nome, setNome, email, setEmail, avatar, setAvatar} = useContext(AppCtx);
+  const {nome, setNome, email, setEmail, avatar, setAvatar, id, setId} = useContext(AppCtx);
   const [posts, setPosts] = useState<Post[]>([] as Post[])
 
   useEffect(()=>{
@@ -34,6 +46,9 @@ export default function Home() {
   async function loadPage(){
     let user: User | null = await validateToken(localStorage.getItem("token") || "")
     if (user != null){
+      if (setId != undefined){
+        setId(user.id)
+      }
       if(setNome != undefined){
         setNome(user.name)
       }
@@ -43,8 +58,12 @@ export default function Home() {
       if(setAvatar != undefined){
         setAvatar(user.avatar)
       }
+      let data = await loadPosts(user.id)
+      setPosts(data)
     }
-    setPosts(await loadPosts())
+    
+    
+    
 
   }
   return (

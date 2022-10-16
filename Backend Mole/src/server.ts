@@ -68,9 +68,13 @@ app.post("/create-account", jsonParser, async function(req, res){
     res.send(resultado)
 })
 
-app.get("/posts", async function(req, res){
+app.get("/posts", async function(req:any, res){
+    let id : number = Number(req.query.id)
+
     let data = await prisma.post.findMany({
+            
         select:{
+            id: true,
             content:true,
             data: true,
             author: {
@@ -79,12 +83,26 @@ app.get("/posts", async function(req, res){
                   name: true,
                   avatar: true
                 },
+            }, 
+            likes:{
+                select:{
+                    id:true,
+                },
+                where:{
+                    authorId: id
+                },
             },
+            _count: {
+                select: { likes:true },
+            }
+            
             
     },
     orderBy: {
         data: "desc",
       },})
+
+
     res.send(data)
 })
 
@@ -316,7 +334,7 @@ app.get("/validate-token", async function(req: any, res){
     if (typeof tokenDescripted == "object"){
         data = await prisma.user.findFirst({
             select:{
-                id: false,
+                id: true,
                 email: true,
                 password: true,
                 name: true,
@@ -355,6 +373,27 @@ app.post("/gravar-post", jsonParser, async function(req: any, res){
     
 })
 
+app.post("/criar-like", jsonParser, async function(req: any, res) {
+    let like = await prisma.like.create({
+        data:{
+            authorId:req.body.authorId,
+            postId:req.body.postId
+        }
+    })    
+    res.send(like)
+})
+
+app.delete("/remover-like", async function(req: any, res) {
+    let idLike : number = Number(req.query.likeId)
+    
+    let a = await prisma.like.delete({
+        where:{
+            id:idLike
+        }
+    })
+    
+})
+
 function criptografar(senha : string){
     const cipher = crypto.createCipher(criptografia.algoritmo, criptografia.segredo);
     cipher.update(senha);
@@ -379,5 +418,23 @@ function geraToken(email: string){
     const token = jwt.sign(data, jwtSecretKey)
     return token
 }
+
+async function existeLike(authorId: number, postId: number){
+    let like = await prisma.like.findFirst({
+        select:{
+            id: true
+        },
+        where:{
+            postId : postId,
+            authorId: authorId
+        }
+    })
+    return like
+}
+
+app.get("/teste-like", async function(req:any,res){
+    let data = await existeLike(Number(req.query.authorId), Number(req.query.postId))
+    res.send(data )
+})
 
 app.listen(3000)

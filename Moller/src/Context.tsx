@@ -1,6 +1,8 @@
 import { createContext, Dispatch, SetStateAction } from "react";
 
 interface AppContextInterface {
+    id: number;
+    setId?: Dispatch<SetStateAction<number>>;
     nome: string;
     setNome?: Dispatch<SetStateAction<string>>;
     email: string;
@@ -12,6 +14,7 @@ interface AppContextInterface {
   }
 
   const defaultState = {
+    id:0,
     nome: "",
     email: "",
     avatar: "",
