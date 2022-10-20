@@ -6,7 +6,6 @@ import bodyParser from "body-parser"
 import jwt from "jsonwebtoken"
 import dotenv from "dotenv"
 import { analiseDia, Comment, Like, Post, User } from "./models";
-import { WhereToVote } from "@mui/icons-material";
 
 
 const prisma = new PrismaClient()
@@ -144,14 +143,16 @@ app.delete("/teste-classes/del-usuario", async function(req, res){
     
     res.send("")
 })
-app.put("/teste-classes/update-usuario", jsonParser, async function(req, res){
+app.put("/alterar-usuario", jsonParser, async function(req, res){
 
     let usuario = new User(
         req.body.email,
         req.body.password, 
-        req.body.name, 
+        req.body.nome, 
         req.body.avatar, 
     ) 
+
+    console.log(req.body, usuario)
 
     const updateUser = await prisma.user.update({
         where: {
@@ -159,7 +160,7 @@ app.put("/teste-classes/update-usuario", jsonParser, async function(req, res){
         },
         data: {
           name: usuario.name,
-          password: criptografar(usuario.password),
+          email: req.body.emailForm,
           avatar: usuario.avatar
         },
     })
@@ -394,6 +395,25 @@ app.delete("/remover-like", async function(req: any, res) {
     
 })
 
+// app.put("/atualizar-usuario", async function(req: any, res) {
+//     let usuarioBanco = prisma.user.findUnique({
+//         select:{
+//             password:true
+//         }, where:{
+//             email: req.query.email
+//         }
+//     })
+
+//     let usuarioNovo = prisma.user.update({
+//         data:{
+//             email:req.query.emailForm,
+//             password:,
+//             name:,
+//             avatar:,
+//         }
+//     })
+// })
+
 function criptografar(senha : string){
     const cipher = crypto.createCipher(criptografia.algoritmo, criptografia.segredo);
     cipher.update(senha);
@@ -434,7 +454,7 @@ async function existeLike(authorId: number, postId: number){
 
 app.get("/teste-like", async function(req:any,res){
     let data = await existeLike(Number(req.query.authorId), Number(req.query.postId))
-    res.send(data )
+    res.send(data)
 })
 
-app.listen(3000)
+app.listen(process.env.PORT || 3000)

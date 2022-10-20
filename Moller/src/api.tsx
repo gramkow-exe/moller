@@ -102,3 +102,12 @@ export async function criarLike(postId : number, authorId : number): Promise<Lik
 export async function removerLike(likeId: Number){
     await axios.delete(`${ipBackend}remover-like?likeId=${likeId}`)
 }
+
+export async function alterarUsuario(email: string, emailForm: string, nome: string, avatar: string): Promise<User | null>{
+    return await axios.put(`${ipBackend}alterar-usuario`, {
+        email, emailForm, nome, avatar
+    }).then((response: AxiosResponse) => { 
+        let data: User | null = response.data;
+        return(data)
+    })
+}

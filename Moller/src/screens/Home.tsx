@@ -35,7 +35,7 @@ interface Like{
   id: number
 }
 
-export default function Home() {
+export default function Moller() {
   const {nome, setNome, email, setEmail, avatar, setAvatar, id, setId} = useContext(AppCtx);
   const [posts, setPosts] = useState<Post[]>([] as Post[])
 
@@ -46,31 +46,13 @@ export default function Home() {
   async function loadPage(){
     let user: User | null = await validateToken(localStorage.getItem("token") || "")
     if (user != null){
-      if (setId != undefined){
-        setId(user.id)
-      }
-      if(setNome != undefined){
-        setNome(user.name)
-      }
-      if(setEmail != undefined){
-        setEmail(user.email)
-      }
-      if(setAvatar != undefined){
-        setAvatar(user.avatar)
-      }
+
       let data = await loadPosts(user.id)
       setPosts(data)
     }
     
-    
-    
-
   }
   return (
-    <div className="flex">
-      <div className="w-3/12 sm:w-1/5">
-        <Menus/>
-      </div>
       <div id="posts" className="w-9/12 sm:w-[55%] p-4 overflow-y-auto bg-scroll min-h-[100%] max-h-[100%]" style={{color:"white"}}>
       {nome}
 
@@ -79,9 +61,5 @@ export default function Home() {
           return(<Post post={post}/>)
         })}
       </div>
-      <div>
-
-      </div>
-    </div>
   );
 }
