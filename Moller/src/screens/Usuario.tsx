@@ -30,6 +30,9 @@ export default function Usuario() {
 
   return (
     <div className="h-screen w-10/12 flex flex-col justify-around items-center p-8">
+      <div className="flex items-center h-20 ">
+        <img className="rounded-full w-24" src={avatar} />
+      </div>
       <div className="bg-fuchsia-400 h-[43%] w-2/4 rounded-xl flex flex-col p-8">
         <TextField
           id="outlined-name"

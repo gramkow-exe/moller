@@ -21,8 +21,6 @@ interface DADOS_CRIPTOGRAFAR{
     tipo  : Encoding
 }
 
-
-
 const criptografia : DADOS_CRIPTOGRAFAR  = {
     algoritmo : "aes256",
     codificacao : "utf8",
@@ -30,10 +28,16 @@ const criptografia : DADOS_CRIPTOGRAFAR  = {
     tipo  : "hex"
 };
 
-
-
 var app = express()
 app.use(cors())
+
+//-----------------------------------------
+
+/*
+* USERS
+*/
+
+//-----------------------------------------
 
 app.get("/users", async function(req, res){
     let data = await prisma.user.findMany()
@@ -66,6 +70,64 @@ app.post("/create-account", jsonParser, async function(req, res){
     var resultado = criado ? geraToken(usuario.email) : ""
     res.send(resultado)
 })
+
+app.put("/alterar-usuario", jsonParser, async function(req, res){
+
+    let usuario = new User(
+        req.body.email,
+        req.body.password, 
+        req.body.nome, 
+        req.body.avatar, 
+    ) 
+
+    const updateUser = await prisma.user.update({
+        where: {
+          email: usuario.email,
+        },
+        data: {
+          name: usuario.name,
+          email: req.body.emailForm,
+          avatar: usuario.avatar
+        },
+    })
+    
+    res.send(updateUser)
+})
+
+app.post("/login", jsonParser, async function(req : any,res){
+    let data = await prisma.user.findFirst({
+        where: {
+            email : req.body.email,
+            password : req.body.password   
+        }, 
+    })
+    var resultado = data ? geraToken(req.body.email) : ""
+    res.send(resultado)
+})
+
+app.delete("/delete-user", jsonParser, async function(req : any,res){
+    const userToDelete = await prisma.user.findFirst({
+        where:{
+            password: criptografar(req.body.password)
+        }
+    })
+
+    if (userToDelete != null && userToDelete.id == req.body.id){
+        prisma.user.delete({
+            where:{
+                id: userToDelete.id
+            }
+        })
+    }
+})
+
+//-----------------------------------------
+
+/*
+* POSTS
+*/
+
+//-----------------------------------------
 
 app.get("/posts", async function(req:any, res){
     let id : number = Number(req.query.id)
@@ -105,6 +167,145 @@ app.get("/posts", async function(req:any, res){
     res.send(data)
 })
 
+app.post("/gravar-post", jsonParser, async function(req: any, res){
+    let id = await prisma.user.findFirst({
+        select:{
+            id: true
+        }, where:{
+            email: req.body.emailUsuario
+        }
+    })
+    if (id){
+       let post = await prisma.post.create({
+        data:{
+            content : req.body.post,
+            authorId: id.id
+        }
+        }) 
+        res.send(post)
+
+    }else{
+        res.send("")
+    }
+
+    
+})
+
+app.delete("/deletar-post", async function (req: any, res) {
+    prisma.post.delete({
+        where:{
+            id: req.query.id
+        }
+    })
+})
+
+
+//-----------------------------------------
+
+/*
+* LIKE
+*/
+
+//-----------------------------------------
+
+app.post("/criar-like", jsonParser, async function(req: any, res) {
+    let like = await prisma.like.create({
+        data:{
+            authorId:req.body.authorId,
+            postId:req.body.postId
+        }
+    })    
+    res.send(like)
+})
+
+app.delete("/remover-like", async function(req: any, res) {
+    let idLike : number = Number(req.query.likeId)
+    
+    let a = await prisma.like.delete({
+        where:{
+            id:idLike
+        }
+    })
+    
+})
+
+async function existeLike(authorId: number, postId: number){
+    let like = await prisma.like.findFirst({
+        select:{
+            id: true
+        },
+        where:{
+            postId : postId,
+            authorId: authorId
+        }
+    })
+    return like
+}
+
+//-----------------------------------------
+
+/*
+* COMMENTS
+*/
+
+//-----------------------------------------
+
+app.post("/criar-comment", jsonParser, async function(req: any, res) {
+    let commentData ={
+        authorId: req.body.authorId,
+        postId: req.body.postId,
+        content: req.body.content
+    }
+
+    let comment = await prisma.comment.create({
+        data:{
+            authorId: commentData.authorId,
+            postId: commentData.postId,
+            content: commentData.content
+        }
+    })    
+    res.send(comment)
+})
+
+app.delete("/remover-comment", async function(req: any, res) {
+    let idComment : number = Number(req.query.comment)
+    
+    await prisma.comment.delete({
+        where:{
+            id:idComment
+        }
+    })
+})
+
+app.get("/comments", async function(req: any, res){
+    let idPost : number = Number(req.query.postId)
+
+    let comments = await prisma.comment.findMany({
+        select:{
+            content: true,
+            id: true,
+            author:{
+                select:{
+                    name: true,
+                    avatar: true
+                }
+            }
+        },
+        where:{
+            postId: idPost
+        }
+    })
+    res.send(comments)
+})
+
+//-----------------------------------------
+
+/*
+* TESTES
+*/
+
+//-----------------------------------------
+
 app.post("/teste-classes/usuario", jsonParser, async function(req, res){
     let usuario = new User(
         req.body.email,
@@ -129,6 +330,7 @@ app.post("/teste-classes/usuario", jsonParser, async function(req, res){
     }})
     res.send(criado)
 })
+
 app.delete("/teste-classes/del-usuario", async function(req, res){
 
     const email = req.query.email
@@ -143,16 +345,15 @@ app.delete("/teste-classes/del-usuario", async function(req, res){
     
     res.send("")
 })
-app.put("/alterar-usuario", jsonParser, async function(req, res){
+
+app.put("/teste-classes/alterar-usuario", jsonParser, async function(req, res){
 
     let usuario = new User(
         req.body.email,
         req.body.password, 
-        req.body.nome, 
+        req.body.name, 
         req.body.avatar, 
     ) 
-
-    console.log(req.body, usuario)
 
     const updateUser = await prisma.user.update({
         where: {
@@ -160,13 +361,14 @@ app.put("/alterar-usuario", jsonParser, async function(req, res){
         },
         data: {
           name: usuario.name,
-          email: req.body.emailForm,
+          password: criptografar(usuario.password) ,
           avatar: usuario.avatar
         },
     })
     
     res.send(updateUser)
 })
+
 app.post("/teste-classes/post", jsonParser, async function(req, res){
     let post = new Post(
         req.body.content,
@@ -187,6 +389,7 @@ app.post("/teste-classes/post", jsonParser, async function(req, res){
     }})
     res.send(criado)
 })
+
 app.post("/teste-classes/all", jsonParser, async function(req, res){
     let usuario = new User(
         req.body.email,
@@ -313,106 +516,30 @@ app.post("/teste-classes/all", jsonParser, async function(req, res){
     res.send(["Usuário:",user,"Post:", criarPost,"Like:", like, "Comentário:", criarComment, "Analise Dia:", dia])
 })
 
-app.post("/login", jsonParser, async function(req : any,res){
+app.get("/teste-like", async function(req:any,res){
+    let data = await existeLike(Number(req.query.authorId), Number(req.query.postId))
+    res.send(data)
+})
+
+app.post("/teste-classe/login", jsonParser, async function(req : any,res){
     let data = await prisma.user.findFirst({
         where: {
             email : req.body.email,
-            password : req.body.password   
+            password : criptografar(req.body.password )   
         }, 
     })
     var resultado = data ? geraToken(req.body.email) : ""
     res.send(resultado)
 })
 
-app.get("/passwordCriptographer", async function(req : any,res){
-        var criptografada = criptografar(req.query.password)
-    res.send(criptografada)
-})
 
-app.get("/validate-token", async function(req: any, res){
-    let tokenDescripted = jwt.verify(req.query.token, criptografia.segredo)
-    let data : any
-    if (typeof tokenDescripted == "object"){
-        data = await prisma.user.findFirst({
-            select:{
-                id: true,
-                email: true,
-                password: true,
-                name: true,
-                avatar: true,
-            },
-            where: {
-                email : tokenDescripted.email 
-            }, 
-        })
+//-----------------------------------------
 
-    }
-    res.send(data)
-})
+/*
+* UTILS
+*/
 
-app.post("/gravar-post", jsonParser, async function(req: any, res){
-    let id = await prisma.user.findFirst({
-        select:{
-            id: true
-        }, where:{
-            email: req.body.emailUsuario
-        }
-    })
-    if (id){
-       let post = await prisma.post.create({
-        data:{
-            content : req.body.post,
-            authorId: id.id
-        }
-        }) 
-        res.send(post)
-
-    }else{
-        res.send("")
-    }
-
-    
-})
-
-app.post("/criar-like", jsonParser, async function(req: any, res) {
-    let like = await prisma.like.create({
-        data:{
-            authorId:req.body.authorId,
-            postId:req.body.postId
-        }
-    })    
-    res.send(like)
-})
-
-app.delete("/remover-like", async function(req: any, res) {
-    let idLike : number = Number(req.query.likeId)
-    
-    let a = await prisma.like.delete({
-        where:{
-            id:idLike
-        }
-    })
-    
-})
-
-// app.put("/atualizar-usuario", async function(req: any, res) {
-//     let usuarioBanco = prisma.user.findUnique({
-//         select:{
-//             password:true
-//         }, where:{
-//             email: req.query.email
-//         }
-//     })
-
-//     let usuarioNovo = prisma.user.update({
-//         data:{
-//             email:req.query.emailForm,
-//             password:,
-//             name:,
-//             avatar:,
-//         }
-//     })
-// })
+//-----------------------------------------
 
 function criptografar(senha : string){
     const cipher = crypto.createCipher(criptografia.algoritmo, criptografia.segredo);
@@ -439,22 +566,34 @@ function geraToken(email: string){
     return token
 }
 
-async function existeLike(authorId: number, postId: number){
-    let like = await prisma.like.findFirst({
-        select:{
-            id: true
-        },
-        where:{
-            postId : postId,
-            authorId: authorId
-        }
-    })
-    return like
-}
-
-app.get("/teste-like", async function(req:any,res){
-    let data = await existeLike(Number(req.query.authorId), Number(req.query.postId))
-    res.send(data)
+app.get("/passwordCriptographer", async function(req : any,res){
+    var criptografada = criptografar(req.query.password)
+res.send(criptografada)
 })
+
+app.get("/validate-token", async function(req: any, res){
+let tokenDescripted = jwt.verify(req.query.token, criptografia.segredo)
+let data : any
+if (typeof tokenDescripted == "object"){
+    data = await prisma.user.findFirst({
+        select:{
+            id: true,
+            email: true,
+            password: true,
+            name: true,
+            avatar: true,
+        },
+        where: {
+            email : tokenDescripted.email 
+        }, 
+    })
+
+}
+res.send(data)
+})
+
+
+
+
 
 app.listen(process.env.PORT || 3000)
