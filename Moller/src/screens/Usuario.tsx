@@ -33,7 +33,7 @@ export default function Usuario() {
       <div className="flex items-center h-20 ">
         <img className="rounded-full w-24" src={avatar} />
       </div>
-      <div className="bg-fuchsia-400 h-[43%] w-2/4 rounded-xl flex flex-col p-8">
+      <div className="bg-fuchsia-400 h-[43%] w-7/8 sm:w-2/4 rounded-xl flex flex-col p-8">
         <TextField
           id="outlined-name"
           label="Email"
@@ -68,7 +68,7 @@ export default function Usuario() {
         />
         <div className="flex justify-center">
           <button
-              className="bg-fuchsia-500 rounded p-2 w-1/2 mt-4"
+              className="bg-fuchsia-500 rounded p-2 w-7/8 sm:w-1/2 mt-4"
               onClick={alterar}
             >
               Alterar Informações
@@ -76,7 +76,7 @@ export default function Usuario() {
         </div>
       </div>
 
-      <div className="bg-fuchsia-400 h-2/6 w-2/4 rounded-xl flex flex-col p-8">
+      <div className="bg-fuchsia-400 h-2/6 w-7/8 sm:w-2/4 rounded-xl flex flex-col p-8">
         <TextField
           id="outlined-name"
           label="Senha antiga"
@@ -101,7 +101,7 @@ export default function Usuario() {
 
         <div className="flex justify-center">
           <button
-              className="bg-fuchsia-500 rounded p-2 w-1/2 mt-4"
+              className="bg-fuchsia-500 rounded p-2 w-3/4 sm:w-1/2 mt-4"
               onClick={alterar}
             >
               Alterar Senha

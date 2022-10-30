@@ -10,6 +10,7 @@ interface Post{
     data: String,
     author: Author,
     likes: Array<Like>,
+    comments: Array<Comment>,
     _count: _count
 }
 
@@ -28,6 +29,11 @@ interface User{
     password: string,
     name: string,
     avatar: string
+}
+
+interface Comment{
+    content: string,
+    author: Author
 }
 
 interface Like{
@@ -108,6 +114,15 @@ export async function alterarUsuario(email: string, emailForm: string, nome: str
         email, emailForm, nome, avatar
     }).then((response: AxiosResponse) => { 
         let data: User | null = response.data;
+        return(data)
+    })
+}
+
+export async function criarComment(postId: Number, authorId : Number, content: String): Promise<Comment | null>{
+    return await axios.post(`${ipBackend}criar-comment`, {
+        postId, authorId, content
+    }).then((response: AxiosResponse) => { 
+        let data: Comment | null = response.data;
         return(data)
     })
 }

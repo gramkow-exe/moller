@@ -8,10 +8,19 @@ import AppCtx from "../Context";
 interface Post{
   id: number,
   content: String,
-  data: String
+  data: String,
   author: Author,
   likes: Array<Like>,
-    _count: _count
+  comments: Array<Comment>,
+  _count: _count
+}
+interface Comment{
+  content: string,
+  author: Author
+}
+interface Comment{
+  content: string,
+  author: Author
 }
 
 interface _count{
@@ -55,7 +64,7 @@ export default function Moller() {
   return (
       <div id="posts" className="w-9/12 sm:w-[55%] p-4 overflow-y-auto bg-scroll min-h-[100%] max-h-[100%]" style={{color:"white"}}>
       {nome}
-
+        
         <InputMoller/>
         {posts && posts.map((post)=> {
           return(<Post post={post}/>)

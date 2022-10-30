@@ -153,6 +153,18 @@ app.get("/posts", async function(req:any, res){
                     authorId: id
                 },
             },
+            comments:{
+                select:{
+                    content: true,
+                    author:{
+                        select:{
+                            id: true,
+                            name: true,
+                            avatar: true
+                        }
+                    }
+                }
+            },
             _count: {
                 select: { likes:true },
             }
