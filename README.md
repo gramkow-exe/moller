@@ -1,11 +1,12 @@
 O projeto Moller consiste em um protótipo de rede social para fins de estudos.
 
-Entre as principais classes estão:
+### Entre as principais classes estão:
 
 
 ![alt text](https://i.imgur.com/QZel4K6.png)
 
 
+## Como iniciar?
 
 Para testar a aplicação, você deve clonar o repositório, e no terminal acessar a pasta do backend, seguido do comando “npm i” para instalar as dependências necessárias. Para rodar, escreva o comando “npm run dev”. Após rodar o backend, é possível ver o retorno de todas as classes na rota: http://localhost:3000/teste-classes/all
 Como corpo de requisição, já que a rota é de tipo POST recomendo utilizar:
@@ -38,7 +39,7 @@ Para testar o front-end, lembre-se de rodas ambas as aplicações com "npm run d
 
 
 
-Backend:
+## Backend:
 
 O Backend da aplicação consiste em uma api REST em typescript. A mesma faz contato com um banco de dados utilizando uma biblioteca chamada Prisma, que faz o modelo das tabelas, assim como, facilita a movimentação de dados dentro das mesmas.
 
