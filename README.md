@@ -55,3 +55,7 @@ Exemplo de rota:
 	![alt text](https://i.imgur.com/NuRe0VT.png)
 
 
+Documentação das Rotas:
+		
+		drive.google.com/u/0/uc?id=1GsYHax0vjCUnfBEDOvoIu1Yot66US7W8&export=download
+
