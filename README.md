@@ -44,9 +44,14 @@ O Backend da aplicação consiste em uma api REST em typescript. A mesma faz con
 
 Para testar o backend, basta utilizar um app ou comando de teste de rotas, escolher uma rota criada e mandar as informações necessárias. Lembrando que o mesmo deve estar rodando na porta de sua máquina, e que, o link utilizado pras rotas tem como base o endereço do seu computador.
 
+
 Exemplo de rota:
+
 	Get Posts:
+	
 		Necessita de um id de usuário para retornar caso o post foi curtido ou não pelo usuário (parâmetro: id)
+		
+		
 	![alt text](https://i.imgur.com/NuRe0VT.png)
 
 
