@@ -26,9 +26,9 @@ Este corpo leva todas as variáveis necessárias para o teste geral, porém exis
 
 Para testar o front-end, lembre-se de rodas ambas as aplicações com "npm run dev" e estar conectado a internet, para que as imagens sejam carregadas.
 
-Como login de teste, pode ser utilizado o a seguir:
-email: gramkowigor@gmail.com
-senha: moles
+	Como login de teste, pode ser utilizado o a seguir:
+	email: gramkowigor@gmail.com
+	senha: moles
 
 
 
@@ -45,17 +45,15 @@ O Backend da aplicação consiste em uma api REST em typescript. A mesma faz con
 Para testar o backend, basta utilizar um app ou comando de teste de rotas, escolher uma rota criada e mandar as informações necessárias. Lembrando que o mesmo deve estar rodando na porta de sua máquina, e que, o link utilizado pras rotas tem como base o endereço do seu computador.
 
 
-Exemplo de rota:
+Exemplo de rota: Get Posts
 
-Get Posts:
-
-Necessita de um id de usuário para retornar caso o post foi curtido ou não pelo usuário (parâmetro: id)
+Parâmetros: Necessita de um id de usuário para retornar caso o post foi curtido ou não pelo usuário (parâmetro: id)
 
 
 ![alt text](https://i.imgur.com/NuRe0VT.png)
 
 
-Documentação das Rotas:
-		
-drive.google.com/u/0/uc?id=1GsYHax0vjCUnfBEDOvoIu1Yot66US7W8&export=download
+	Documentação das Rotas:
+
+	drive.google.com/u/0/uc?id=1GsYHax0vjCUnfBEDOvoIu1Yot66US7W8&export=download
 
