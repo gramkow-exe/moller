@@ -56,5 +56,5 @@ Parâmetros: Necessita de um id de usuário para retornar caso o post foi curtid
 
 	Documentação das Rotas:
 
-	drive.google.com/u/0/uc?id=1GsYHax0vjCUnfBEDOvoIu1Yot66US7W8&export=download
+	https://drive.google.com/u/0/uc?id=1GsYHax0vjCUnfBEDOvoIu1Yot66US7W8&export=download
 
