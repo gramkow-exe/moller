@@ -10,14 +10,14 @@ Entre as principais classes estão:
 Para testar a aplicação, você deve clonar o repositório, e no terminal acessar a pasta do backend, seguido do comando “npm i” para instalar as dependências necessárias. Para rodar, escreva o comando “npm run dev”. Após rodar o backend, é possível ver o retorno de todas as classes na rota: http://localhost:3000/teste-classes/all
 Como corpo de requisição, já que a rota é de tipo POST recomendo utilizar:
 
-{
-	"content":"teste classes post",
-	"email" : "walmor@gmail.com",
-	"password" : "walmor", 
-	"name" : "walmor", 
-	"avatar" : "https://171dxwjpaqv2danpq11ixf2j-wpengine.netdna-ssl.com/wp-content/uploads/2017/11/a-mole-is-4-7-inches-in-length-with-paddle-shaped-1.jpeg",
-	"comment": "Comentário"
-}
+	{
+		"content":"teste classes post",
+		"email" : "walmor@gmail.com",
+		"password" : "walmor", 
+		"name" : "walmor", 
+		"avatar" : "https://171dxwjpaqv2danpq11ixf2j-wpengine.netdna-ssl.com/wp-content/uploads/2017/11/a-mole-is-4-7-inches-in-length-with-paddle-shaped-1.jpeg",
+		"comment": "Comentário"
+	}
 
 Este corpo leva todas as variáveis necessárias para o teste geral, porém existem rotas específicas para as classes principais, como Usuário (que conta com CRUD) e posts. O resultado do teste deve se assemelhar à imagem abaixo:
 
@@ -47,15 +47,15 @@ Para testar o backend, basta utilizar um app ou comando de teste de rotas, escol
 
 Exemplo de rota:
 
-	Get Posts:
-	
-		Necessita de um id de usuário para retornar caso o post foi curtido ou não pelo usuário (parâmetro: id)
-		
-		
-	![alt text](https://i.imgur.com/NuRe0VT.png)
+Get Posts:
+
+Necessita de um id de usuário para retornar caso o post foi curtido ou não pelo usuário (parâmetro: id)
+
+
+![alt text](https://i.imgur.com/NuRe0VT.png)
 
 
 Documentação das Rotas:
 		
-		drive.google.com/u/0/uc?id=1GsYHax0vjCUnfBEDOvoIu1Yot66US7W8&export=download
+drive.google.com/u/0/uc?id=1GsYHax0vjCUnfBEDOvoIu1Yot66US7W8&export=download
 
