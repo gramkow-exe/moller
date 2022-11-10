@@ -188,26 +188,28 @@ app.get("/posts", async function(req:any, res){
 })
 
 app.post("/gravar-post", jsonParser, async function(req: any, res){
-    let id = await prisma.user.findFirst({
-        select:{
-            id: true
-        }, where:{
-            email: req.body.emailUsuario
+    let user = await validarToken(req.headers['token'])
+    if (user){
+        let id = await prisma.user.findFirst({
+            select:{
+                id: true
+            }, where:{
+                email: user.email
+            }
+        })
+        if (id){
+           let post = await prisma.post.create({
+            data:{
+                content : req.body.post,
+                authorId: id.id
+            }
+            }) 
+            res.send(post)
+            return
+    
         }
-    })
-    if (id){
-       let post = await prisma.post.create({
-        data:{
-            content : req.body.post,
-            authorId: id.id
-        }
-        }) 
-        res.send(post)
-
-    }else{
-        res.send("")
     }
-
+    res.send("")
     
 })
 
@@ -229,9 +231,11 @@ app.delete("/deletar-post", async function (req: any, res) {
 //-----------------------------------------
 
 app.post("/criar-like", jsonParser, async function(req: any, res) {
+    let user = await validarToken(req.headers['token'])
+    
     let like = await prisma.like.create({
         data:{
-            authorId:req.body.authorId,
+            authorId:user.id,
             postId:req.body.postId
         }
     })    
@@ -271,8 +275,10 @@ async function existeLike(authorId: number, postId: number){
 //-----------------------------------------
 
 app.post("/criar-comment", jsonParser, async function(req: any, res) {
+    let user = await validarToken(req.headers['token'])
+    
     let commentData ={
-        authorId: req.body.authorId,
+        authorId: user.id,
         postId: req.body.postId,
         content: req.body.content
     }

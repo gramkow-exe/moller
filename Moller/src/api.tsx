@@ -92,8 +92,11 @@ export async function validateToken(token : string): Promise<User | null>{
 
 export async function gravarPost(post : string, emailUsuario : string): Promise<User | null>{
     return await axios.post(`${ipBackend}gravar-post`, {
-        post, emailUsuario
-    }).then((response: AxiosResponse) => { 
+        post
+    }, {
+        headers : {
+            'token' : localStorage.getItem("token") || ""
+    }}).then((response: AxiosResponse) => { 
         let data: User | null = response.data;
         return(data)
     })
@@ -101,8 +104,11 @@ export async function gravarPost(post : string, emailUsuario : string): Promise<
 
 export async function criarLike(postId : number, authorId : number): Promise<Like | null>{
     return await axios.post(`${ipBackend}criar-like`, {
-        postId, authorId
-    }).then((response: AxiosResponse) => { 
+        postId
+    }, {
+        headers : {
+            'token' : localStorage.getItem("token") || ""
+    }}).then((response: AxiosResponse) => { 
         let data: Like | null = response.data;
         return(data)
     })
@@ -123,8 +129,11 @@ export async function alterarUsuario(email: string, emailForm: string, nome: str
 
 export async function criarComment(postId: Number, authorId : Number, content: String): Promise<Comment | null>{
     return await axios.post(`${ipBackend}criar-comment`, {
-        postId, authorId, content
-    }).then((response: AxiosResponse) => { 
+        postId, content
+    }, {
+        headers : {
+            'token' : localStorage.getItem("token") || ""
+    }}).then((response: AxiosResponse) => { 
         let data: Comment | null = response.data;
         return(data)
     })
