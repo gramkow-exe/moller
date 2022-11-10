@@ -31,6 +31,10 @@ const criptografia : DADOS_CRIPTOGRAFAR  = {
 var app = express()
 app.use(cors())
 
+app.get("/", async function hello(req, res) {
+    res.send("Backend Operante!, Rotas: <a href='https://github.com/gramkow-exe/moller'> Github </a>")
+})
+
 //-----------------------------------------
 
 /*
@@ -95,13 +99,12 @@ app.put("/alterar-usuario", jsonParser, async function(req, res){
 })
 
 app.post("/login", jsonParser, async function(req : any,res){
-    let data = await prisma.user.findFirst({
+    let data = await prisma.user.findUniqueOrThrow({
         where: {
-            email : req.body.email,
-            password : req.body.password   
+            email : req.body.email,   
         }, 
     })
-    var resultado = data ? geraToken(req.body.email) : ""
+    var resultado = data.password == req.body.password ? geraToken(req.body.email) : ""
     res.send(resultado)
 })
 
@@ -130,53 +133,58 @@ app.delete("/delete-user", jsonParser, async function(req : any,res){
 //-----------------------------------------
 
 app.get("/posts", async function(req:any, res){
-    let id : number = Number(req.query.id)
+    // let id : number = Number(req.query.id)
+    let user = await validarToken(req.headers['token'])
 
-    let data = await prisma.post.findMany({
+    if (user){
+        let data = await prisma.post.findMany({
             
-        select:{
-            id: true,
-            content:true,
-            data: true,
-            author: {
-                
-                select: {
-                  name: true,
-                  avatar: true
+            select:{
+                id: true,
+                content:true,
+                data: true,
+                author: {
+                    
+                    select: {
+                      name: true,
+                      avatar: true
+                    },
+                }, 
+                likes:{
+                    select:{
+                        id:true,
+                    },
+                    where:{
+                        authorId: user.id
+                    },
                 },
-            }, 
-            likes:{
-                select:{
-                    id:true,
-                },
-                where:{
-                    authorId: id
-                },
-            },
-            comments:{
-                select:{
-                    content: true,
-                    author:{
-                        select:{
-                            id: true,
-                            name: true,
-                            avatar: true
+                comments:{
+                    select:{
+                        content: true,
+                        author:{
+                            select:{
+                                id: true,
+                                name: true,
+                                avatar: true
+                            }
                         }
                     }
+                },
+                _count: {
+                    select: { likes:true },
                 }
-            },
-            _count: {
-                select: { likes:true },
-            }
-            
-            
-    },
-    orderBy: {
-        data: "desc",
-      },})
+                
+                
+        },
+        orderBy: {
+            data: "desc",
+          },})
 
-
-    res.send(data)
+        res.send(data)
+    } else {
+        res.send("")
+    }
+    
 })
 
 app.post("/gravar-post", jsonParser, async function(req: any, res){
@@ -603,6 +611,27 @@ if (typeof tokenDescripted == "object"){
 }
 res.send(data)
 })
+
+async function validarToken(token : string){
+    let tokenDescripted = jwt.verify(token, criptografia.segredo)
+    let data : any
+    if (typeof tokenDescripted == "object"){
+        data = await prisma.user.findFirst({
+            select:{
+                id: true,
+                email: true,
+                password: true,
+                name: true,
+                avatar: true,
+            },
+            where: {
+                email : tokenDescripted.email 
+            }, 
+        })
+    
+    }
+    return data
+}
 
 
 

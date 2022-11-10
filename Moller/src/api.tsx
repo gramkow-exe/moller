@@ -41,7 +41,10 @@ interface Like{
 }
 
 export async function loadPosts(id:number): Promise<Post[]>{
-    return await axios.get(`${ipBackend}posts?id=${id}`).then((response: AxiosResponse) => { 
+    return await axios.get(`${ipBackend}posts`, {
+        headers : {
+            'token' : localStorage.getItem("token") || ""
+    }}).then((response: AxiosResponse) => { 
         let data: Post[] = response.data;
         return(data)
     })
