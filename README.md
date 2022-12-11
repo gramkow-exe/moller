@@ -69,3 +69,30 @@ Você recebe um token, que sera passado na rota de posts, para que as informaç�
 
 https://drive.google.com/uc?export=download&id=1dV0ICXrahGb4JZd7MSWpzY9kmhxv8Err
 
+
+## Utilização
+
+Upload de imagens:
+
+![alt text](https://i.imgur.com/iz3CxzJ.png)
+
+
+Página de Usuário:
+
+![alt text](https://i.imgur.com/pf52yL7.png)
+
+Página para editar o usuário:
+
+![alt text](https://i.imgur.com/omkum5y.png)
+
+Página inicial:
+
+![alt text](https://i.imgur.com/cKQnsSK.png)
+
+
+
+
+
+
+
+
