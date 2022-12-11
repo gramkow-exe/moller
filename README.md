@@ -54,7 +54,18 @@ Parâmetros: Necessita de um id de usuário para retornar caso o post foi curtid
 ![alt text](https://i.imgur.com/NuRe0VT.png)
 
 
+## Teste JWT:
+
+Logar em conta exemplo:
+
+	curl localhost:3000/login -X POST -H "Content-Type:application/json" -d "{\"email\": \"gramkowigor@gmail.com\", \"password\": \"62a7b38fa43c3b1dbbb91929c28fdfbe\"}"
+
+Você recebe um token, que sera passado na rota de posts, para que as informações sejam condizentes com o perfil:
+
+	curl http://localhost:3000/posts -H "token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0aW1lIjoiV2VkIE5vdiAwOSAyMDIyIDIzOjE5OjM2IEdNVC0wMzAwIChIb3LDoXJpbyBQYWRyw6NvIGRlIEJyYXPDrWxpYSkiLCJlbWFpbCI6ImdyYW1rb3dpZ29yQGdtYWlsLmNvbSIsImlhdCI6MTY2ODA0Njc3Nn0.7Xa-554J9I8YopD9ook0BAFfQksfTz2mbOzowWeY4fM"
+
+
 ### Documentação das Rotas:
 
-https://drive.google.com/u/0/uc?id=1GsYHax0vjCUnfBEDOvoIu1Yot66US7W8&export=download
+https://drive.google.com/uc?export=download&id=1dV0ICXrahGb4JZd7MSWpzY9kmhxv8Err
 
