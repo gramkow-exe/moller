@@ -1,6 +1,6 @@
 import { TextField } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
-import {alterarUsuario, loadPosts, validateToken} from "../api";
+import {alterarUsuario, changePassword, criptografar, loadPosts, validateToken} from "../api";
 import InputMoller from "../components/InputMoller";
 import Menus from "../components/Menus";
 import Post from "../components/Post"
@@ -26,6 +26,15 @@ export default function Usuario() {
 
   async function alterar(){
     alterarUsuario(email, emailForm, nomeForm, avatarForm)
+  }
+
+  async function alterarSenha(){
+    let senhaAntigaHash = await criptografar(senhaAntiga)
+    let senhaNovaHash = await criptografar(senhaNova)
+    
+    await changePassword(email, senhaAntigaHash , senhaNovaHash)
+    setSenhaAntiga("")
+    setSenhaNova("")
   }
 
   return (
@@ -81,6 +90,7 @@ export default function Usuario() {
           id="outlined-name"
           label="Senha antiga"
           color="secondary"
+          type={"password"}
           value={senhaAntiga}
           style={{marginTop:10}}
           onChange={(e) => {
@@ -92,6 +102,7 @@ export default function Usuario() {
           id="outlined-name"
           label="Senha nova"
           color="secondary"
+          type={"password"}
           value={senhaNova}
           style={{marginTop:10}}
           onChange={(e) => {
@@ -102,7 +113,7 @@ export default function Usuario() {
         <div className="flex justify-center">
           <button
               className="bg-fuchsia-500 rounded p-2 w-3/4 sm:w-1/2 mt-4"
-              onClick={alterar}
+              onClick={alterarSenha}
             >
               Alterar Senha
           </button>

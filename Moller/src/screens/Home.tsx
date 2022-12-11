@@ -12,7 +12,8 @@ interface Post{
   author: Author,
   likes: Array<Like>,
   comments: Array<Comment>,
-  _count: _count
+  _count: _count,
+  imageName: String
 }
 interface Comment{
   content: string,
@@ -29,6 +30,7 @@ interface _count{
 
 interface Author{
   name: String,
+  email: string,
   avatar: string
 }
 

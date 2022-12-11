@@ -1,17 +1,24 @@
-import express from "express";
-var cors = require('cors')
+import express, { ErrorRequestHandler } from "express";
+var cors = require('cors');
+var multer = require('multer');
 import { PrismaClient } from "@prisma/client";
-import crypto, {Encoding} from "crypto"
-import bodyParser from "body-parser"
+import crypto, {Encoding, createHash} from "crypto"
+import bodyParser, { json } from "body-parser"
 import jwt from "jsonwebtoken"
 import dotenv from "dotenv"
+
 import { analiseDia, Comment, Like, Post, User } from "./models";
+import os from "os"
+import { NextPlan } from "@mui/icons-material";
 
 
 const prisma = new PrismaClient()
+
 var jsonParser = bodyParser.json()
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 dotenv.config();
+
+const networkInfo = os.networkInterfaces();
 
 
 interface DADOS_CRIPTOGRAFAR{
@@ -29,10 +36,44 @@ const criptografia : DADOS_CRIPTOGRAFAR  = {
 };
 
 var app = express()
+
+app.use(express.static("uploads"))
 app.use(cors())
+app.use(bodyParser.urlencoded({ extended: true }));
+
+const errorHandler: ErrorRequestHandler = (err, req, res, next) => {};
+
+const storage = multer.diskStorage({
+    destination: function (req:any, file:any, cb:any) {
+        cb(null, '../Backend Mole/uploads/');
+    }
+    ,
+    filename: function (req:any, file:any, cb:any) {
+        cb(null, req.query.name);
+    }
+});
+
+const fileFilter = (req:any, file:any, cb:any) => {
+    // reject a file
+    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+        cb(null, true);
+    } else {
+        cb(null, false);
+    }
+}
+
+
+app.use(errorHandler);
+const upload = multer({
+    storage: storage,
+    fileFilter: fileFilter
+})
+app.use(upload.any());
 
 app.get("/", async function hello(req, res) {
-    res.send("Backend Operante!, Rotas: <a href='https://github.com/gramkow-exe/moller'> Github </a>")
+    
+    let ip = networkInfo
+    res.send(`Igor e Zanella (MOLES) <br/> Backend Operante!, Rotas: <a href='https://github.com/gramkow-exe/moller'> Github </a> <br/> IP: ${networkInfo?.["Wi-Fi"]?.[1]?.address}:3000`)
 })
 
 //-----------------------------------------
@@ -53,8 +94,12 @@ app.post("/create-account", jsonParser, async function(req, res){
         req.body.email,
         req.body.password, 
         req.body.name, 
-        req.body.avatar, 
+        req.body.avatar,     
     ) 
+    if (await verifyEmailExistence(usuario.email) != null){
+        res.send("")
+        return
+    }
     
     const user = await prisma.user.create({
         data:{
@@ -69,7 +114,7 @@ app.post("/create-account", jsonParser, async function(req, res){
     let criado = await prisma.user.findFirst({
         where: {
             email: usuario.email,
-            password: criptografar(usuario.password)
+            password:await criptografar(usuario.password)
     }})
     var resultado = criado ? geraToken(usuario.email) : ""
     res.send(resultado)
@@ -98,20 +143,25 @@ app.put("/alterar-usuario", jsonParser, async function(req, res){
     res.send(updateUser)
 })
 
-app.post("/login", jsonParser, async function(req : any,res){
-    let data = await prisma.user.findUniqueOrThrow({
-        where: {
-            email : req.body.email,   
-        }, 
-    })
-    var resultado = data.password == req.body.password ? geraToken(req.body.email) : ""
-    res.send(resultado)
+app.post("/login", jsonParser, async function(req : any,res, next){
+    try{
+        let data = await prisma.user.findUniqueOrThrow({
+            where: {
+                email : req.body.email,   
+            }, 
+        })
+        var resultado = data.password == req.body.password ? geraToken(req.body.email) : ""
+        res.send(resultado)
+    }catch(error){
+        next(error)
+    }
+    
 })
 
-app.delete("/delete-user", jsonParser, async function(req : any,res){
+app.delete("/delete-user", async function(req : any,res){
     const userToDelete = await prisma.user.findFirst({
         where:{
-            password: criptografar(req.body.password)
+            password:await criptografar(req.body.password)
         }
     })
 
@@ -123,6 +173,103 @@ app.delete("/delete-user", jsonParser, async function(req : any,res){
         })
     }
 })
+
+app.put("/change-password",jsonParser, async function (req:any, res) {
+    let token = await validarToken(req.headers['token'])
+    let passVerify = await verifyPassword(req.body.email, req.body.oldPassword)
+
+
+    
+    if (token.email != null && token.email == req.body.email && passVerify){
+        await prisma.user.update({
+            where: {
+              email: token.email,
+            },data:{
+                password:req.body.newPassword
+            }
+        })
+    }
+
+    res.send("")
+})
+
+app.get("/user-page", async function(req:any, res){
+    let email = req.query.email
+    let token = await validarToken(req.headers['token'])
+
+    let data = null
+
+    if (email){
+         let user = await prisma.user.findUnique({
+            select:{
+                avatar:true,
+                name:true,
+            },
+            where:{
+                email:email
+            }
+        })
+        let posts = await prisma.post.findMany({
+            
+            select:{
+                id: true,
+                content:true,
+                data: true,
+                imageName:true,
+                author: {
+                    
+                    select: {
+                      name: true,
+                      email:true,
+                      avatar: true
+                    },
+                }, 
+                likes:{
+                    select:{
+                        id:true,
+                    },
+                    where:{
+                        authorId: token.id
+                    },
+                },
+                comments:{
+                    select:{
+                        content: true,
+                        author:{
+                            select:{
+                                id: true,
+                                name: true,
+                                avatar: true
+                            }
+                        }
+                    }
+                },
+                _count: {
+                    select: { likes:true },
+                }
+                
+                
+        },
+        orderBy: {
+            data: "desc",
+          },
+        where:{
+            author:{
+                email: email
+            }
+        }
+        })
+
+        data = {
+            name : user?.name,
+            avatar: user?.avatar,
+            posts: posts
+        }
+    }
+    res.send(data)
+})
+
+
 
 //-----------------------------------------
 
@@ -143,10 +290,12 @@ app.get("/posts", async function(req:any, res){
                 id: true,
                 content:true,
                 data: true,
+                imageName:true,
                 author: {
                     
                     select: {
                       name: true,
+                      email:true,
                       avatar: true
                     },
                 }, 
@@ -201,6 +350,32 @@ app.post("/gravar-post", jsonParser, async function(req: any, res){
            let post = await prisma.post.create({
             data:{
                 content : req.body.post,
+                authorId: id.id
+            }
+            }) 
+            res.send(post)
+            return
+    
+        }
+    }
+    res.send("")
+    
+})
+
+app.post("/gravar-post-img", jsonParser, async function(req: any, res){
+    let user = await validarToken(req.headers['token'])
+    if (user){
+        let id = await prisma.user.findFirst({
+            select:{
+                id: true
+            }, where:{
+                email: user.email
+            }
+        })
+        if (id){
+           let post = await prisma.post.create({
+            data:{
+                imageName : req.body.imgName,
                 authorId: id.id
             }
             }) 
@@ -343,7 +518,7 @@ app.post("/teste-classes/usuario", jsonParser, async function(req, res){
     const user = await prisma.user.create({
         data:{
             email: usuario.email,
-            password:criptografar(usuario.password),
+            password:await criptografar(usuario.password),
             name: usuario.name,
             avatar: usuario.avatar,
         }
@@ -387,7 +562,7 @@ app.put("/teste-classes/alterar-usuario", jsonParser, async function(req, res){
         },
         data: {
           name: usuario.name,
-          password: criptografar(usuario.password) ,
+          password:await criptografar(usuario.password) ,
           avatar: usuario.avatar
         },
     })
@@ -427,7 +602,7 @@ app.post("/teste-classes/all", jsonParser, async function(req, res){
     const user = await prisma.user.create({
         data:{
             email: usuario.email,
-            password:criptografar(usuario.password),
+            password:await criptografar(usuario.password),
             name: usuario.name,
             avatar: usuario.avatar,
         }
@@ -547,11 +722,12 @@ app.get("/teste-like", async function(req:any,res){
     res.send(data)
 })
 
+
 app.post("/teste-classe/login", jsonParser, async function(req : any,res){
     let data = await prisma.user.findFirst({
         where: {
             email : req.body.email,
-            password : criptografar(req.body.password )   
+            password : await criptografar(req.body.password )   
         }, 
     })
     var resultado = data ? geraToken(req.body.email) : ""
@@ -567,11 +743,14 @@ app.post("/teste-classe/login", jsonParser, async function(req : any,res){
 
 //-----------------------------------------
 
-function criptografar(senha : string){
-    const cipher = crypto.createCipher(criptografia.algoritmo, criptografia.segredo);
-    cipher.update(senha);
-    var criptografada = cipher.final(criptografia.tipo);
-    return criptografada
+async function criptografar(senha : string){
+    // const cipher = crypto.createCipher(criptografia.algoritmo, criptografia.segredo);
+    // cipher.update(senha);
+    // var criptografada = cipher.final(criptografia.tipo);
+    const hash = createHash("sha256")
+    hash.update(senha)
+    var data = hash.digest("hex")
+    return data
 }
 
 function descriptografar(senha : string) {
@@ -593,9 +772,20 @@ function geraToken(email: string){
 }
 
 app.get("/passwordCriptographer", async function(req : any,res){
-    var criptografada = criptografar(req.query.password)
+    var criptografada = await criptografar(req.query.password)
 res.send(criptografada)
 })
+
+app.post("/save-img", upload.single('post'), async function(req : any,res){
+        res.send(
+        ""
+    )
+})
+
+app.get("/name-img", async function (req: any, res) {
+    res.send( `${req.query.name}-${Date.now()}`)
+})
+
 
 app.get("/validate-token", async function(req: any, res){
 let tokenDescripted = jwt.verify(req.query.token, criptografia.segredo)
@@ -618,6 +808,7 @@ if (typeof tokenDescripted == "object"){
 res.send(data)
 })
 
+
 async function validarToken(token : string){
     let tokenDescripted = jwt.verify(token, criptografia.segredo)
     let data : any
@@ -639,8 +830,31 @@ async function validarToken(token : string){
     return data
 }
 
+async function verifyEmailExistence(email: string){
+    const user = await prisma.user.findUnique({
+        select: {
+            email:true
+        },where:{
+            email: email
+        }
+    })
 
+    return user
+}
 
+async function verifyPassword(email: string, password: String){
+    const user = await prisma.user.findUnique({
+        select: {
+            email:true,
+            password: true
+        },where:{
+            email: email
+        }
+    })
+
+    return user?.password == password && user.password != null
+
+}
 
 
 app.listen(process.env.PORT || 3000)

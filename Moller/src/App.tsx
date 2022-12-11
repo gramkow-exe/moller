@@ -16,6 +16,7 @@ function App() {
   const [avatar, setAvatar] = useState("")
   const [showLogin, setShowLogin] = useState(true)
   const [showRegister, setShowRegister] = useState(false)
+  const [emailUserPage, setEmailUserPage] = useState("")
 
   useEffect(()=> {
     setIp(window.location.href.replace("5173", "3000"))
@@ -29,7 +30,8 @@ function App() {
       nome, setNome,
       email, setEmail,
       avatar, setAvatar,
-      showLogin, setShowLogin
+      showLogin, setShowLogin,
+      emailUserPage, setEmailUserPage
     }}>
       <BrowserRouter>
         <Routes>

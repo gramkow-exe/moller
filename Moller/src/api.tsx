@@ -11,7 +11,8 @@ interface Post{
     author: Author,
     likes: Array<Like>,
     comments: Array<Comment>,
-    _count: _count
+    _count: _count,
+    imageName: String
 }
 
 interface _count{
@@ -20,6 +21,7 @@ interface _count{
 
 interface Author{
     name: String,
+    email: string,
     avatar: string
 }
 
@@ -38,6 +40,13 @@ interface Comment{
 
 interface Like{
     id: number
+}
+
+interface UserInfo{
+    name:string,
+    avatar:string,
+    posts:Array<Post>,
+
 }
 
 export async function loadPosts(id:number): Promise<Post[]>{
@@ -61,6 +70,10 @@ export async function logar(email : string, password : string): Promise<string>{
 
 export function setIp(ip:string){
     ipBackend = ip
+}
+
+export function getIp(){
+    return ipBackend
 }
 
 export async function register(email : string, password : string, name:string, avatar:string) : Promise<string>{
@@ -138,3 +151,64 @@ export async function criarComment(postId: Number, authorId : Number, content: S
         return(data)
     })
 }
+
+export async function changePassword(email: String, oldPassword: String, newPassword: String): Promise<Comment | null>{
+    return await axios.put(`${ipBackend}change-password`, {
+        email, oldPassword, newPassword
+    }, {
+        headers : {
+            'token' : localStorage.getItem("token") || ""
+    }}).then((response: AxiosResponse) => { 
+        let data: Comment | null = response.data;
+        return(data)
+    })
+}
+
+export async function userPage(email: String): Promise<UserInfo | null>{
+    return await axios.get(`${ipBackend}user-page`, {
+        params:{
+            email
+        },
+        headers : {
+            'token' : localStorage.getItem("token") || ""
+    }
+    }).then((response: AxiosResponse) => { 
+        let data: UserInfo | null = response.data;
+        return(data)
+    })
+}
+
+
+export async function saveImg(formdata: any, name: String): Promise<String | null>{
+    return await axios.post(`${ipBackend}save-img`, formdata, {
+        params: {
+            name
+        }
+    }).then((response: AxiosResponse) => { 
+        let data: String | null = response.data;
+        return(data)
+    })
+}
+
+export async function nameImg(name: String): Promise<String | null>{
+    return await axios.get(`${ipBackend}name-img`, {params:{
+        name
+    }}).then((response: AxiosResponse) => { 
+        let data: String | null = response.data;
+        return(data)
+    })
+}
+
+export async function gravarPostImg(imgName : String): Promise<User | null>{
+    return await axios.post(`${ipBackend}gravar-post-img`, {
+        imgName
+    }, {
+        headers : {
+            'token' : localStorage.getItem("token") || ""
+    }}).then((response: AxiosResponse) => { 
+        let data: User | null = response.data;
+        return(data)
+    })
+}
+
+

@@ -6,6 +6,7 @@ interface Comment{
 }
 interface Author{
   name: String,
+  email: string,
   avatar: string
 }
 

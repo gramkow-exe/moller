@@ -4,7 +4,7 @@ import Button from "@mui/material/Button";
 import Raven from "../raven.png"
 import {Favorite, FavoriteBorder, ChatBubbleOutline, ChatBubble} from '@mui/icons-material';
 import AppCtx from "../Context";
-import { criarLike, removerLike } from "../api";
+import { criarLike, getIp, removerLike } from "../api";
 import Comment from "./Comment";
 import CommenterMoller from "./CommenterMoller";
 
@@ -15,7 +15,8 @@ interface Post{
   author: Author,
   likes: Array<Like>,
   comments: Array<Comment>,
-  _count: _count
+  _count: _count,
+  imageName: String
 }
 interface Comment{
   content: string,
@@ -28,6 +29,7 @@ interface _count{
 
 interface Author{
   name: String,
+  email: string,
   avatar: string
 }
 
@@ -40,6 +42,8 @@ interface Like{
 }
 
 export default function Post({post}: Props) {
+
+  const {setEmailUserPage} = useContext(AppCtx)
 
   const [liked, setLiked] = useState(post.likes[0]?.id != null)
   const [likes, setLikes] = useState(post._count.likes)
@@ -71,13 +75,15 @@ export default function Post({post}: Props) {
     <div className="rounded-lg border-gray-50/50 border-2 w-full h-auto min-h-80 p-4 mt-4 hover:border-fuchsia-400/50 transition-all">
         <div className="flex items-center">
           <div className="rounded-full w-10 sm:w-14 bg-no-repeat bg-center bg-cover h-10 sm:h-14" style={{backgroundImage:`url("${post.author.avatar}")`}}></div>
-            <div className="text-white ml-2">
+            <div className="text-white ml-2 cursor-pointer" onClick={()=>{setEmailUserPage?.(post.author.email)}}>
               <p className="text-sm sm:text-lg">{post.author.name}</p>
               <p className="text-white/50 text-xs sm:text-md">{post.data.substring(0,10).split('-').reverse().join('/')}</p>
             </div>
         </div>
         <div className="mt-2">
           {post.content}
+          {post.imageName != "" && post.imageName != null && <img src={`${getIp()}${post.imageName}`}></img>}
+          
         </div>
         <div className="flex justify-between mt-2">
           <button onClick={handleLike}><>{liked?<Favorite/>:<FavoriteBorder/>} {likes}</></button>

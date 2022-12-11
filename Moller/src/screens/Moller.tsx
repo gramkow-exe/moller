@@ -6,6 +6,7 @@ import Post from "../components/Post"
 import Home from "../screens/Home"
 import AppCtx from "../Context";
 import Usuario from "./Usuario";
+import UserPage from "./UserPage";
 
 interface User{
   id: number,
@@ -20,7 +21,20 @@ interface Like{
 }
 
 export default function Moller() {
-  const {nome, setNome, email, setEmail, avatar, setAvatar, id, setId, aba, setAba} = useContext(AppCtx);
+  const {nome, setNome, email, setEmail, avatar, setAvatar, id, setId, aba, setAba, emailUserPage, setEmailUserPage} = useContext(AppCtx);
+
+  
+useEffect(()=> {
+  if (emailUserPage != ""){
+    setAba?.("userPage")
+  }
+}, [emailUserPage])
+
+useEffect(()=> {
+  if (aba != "userPage"){
+    setEmailUserPage?.("")
+  }
+}, [aba])
 
   useEffect(()=>{
     loadPage()
@@ -43,6 +57,7 @@ export default function Moller() {
       </div>
       {aba=="home"? <Home/>:null}
       {aba=="usuario" ?<Usuario/> : null}
+      {aba=="userPage"?<UserPage email={emailUserPage}/>:null}
       
     </div>
   );

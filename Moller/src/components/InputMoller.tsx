@@ -1,9 +1,11 @@
-import React, { useContext, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { Route, BrowserRouter, Link } from "react-router-dom";
 import Button from "@mui/material/Button";
+import CollectionsIcon from '@mui/icons-material/Collections';
 import { TextField } from "@mui/material";
 import AppCtx from "../Context";
-import { gravarPost } from "../api";
+import { gravarPost, gravarPostImg, nameImg, saveImg } from "../api";
+import Dropzone, {useDropzone} from 'react-dropzone'
 
 export default function InputMoller() {
   const { nome, setNome, email, setEmail, avatar, setAvatar } =
@@ -42,6 +44,34 @@ export default function InputMoller() {
           </button>
         ) : null}
       </div>
+      <Dropzone onDrop={async acceptedFiles => {
+        const file = acceptedFiles[0]
+
+        const formData = new FormData();
+
+        formData.append("post", file)
+
+        let nome = await nameImg(file.name.replace(".png", "").replace(".jpg", "")) + "." + file.type.split("/")[1]
+        await gravarPostImg(nome || "")
+        try{
+          await saveImg(formData, nome || "")
+        }catch (e:any){
+
+        }finally{
+          window.location.reload()
+        }
+      }
+      
+      }>
+        {({getRootProps, getInputProps}) => (
+          <section>
+            <div {...getRootProps()}>
+              <input {...getInputProps()} />
+              <p><CollectionsIcon/></p>
+            </div>
+          </section>
+        )}
+      </Dropzone>
     </div>
   );
 }
